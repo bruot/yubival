@@ -5,6 +5,8 @@ description = "Django app that runs a standalone Yubikey validation server"
 authors = ["Nicolas Bruot <coremeltdown@bruot.org>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
+homepage = "https://github.com/bruot/yubival"
+repository = "https://github.com/bruot/yubival"
 
 [tool.poetry.dependencies]
 python = "^3.9"
