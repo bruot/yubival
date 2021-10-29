@@ -17,6 +17,9 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Security",
 ]
+include = [
+    'LICENCE',
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
