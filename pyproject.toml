@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yubival"
-version = "0.1.0rc1"
+version = "0.1.0"
 description = "Django app that runs a standalone Yubikey validation server"
 authors = ["Nicolas Bruot <coremeltdown@bruot.org>"]
 license = "GPL-3.0-or-later"
