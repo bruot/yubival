@@ -81,4 +81,4 @@ class Device(models.Model):
     )
 
     def __str__(self):
-        return '%s (%d)' % (self.label, self.id)
+        return '%s' % self.label
