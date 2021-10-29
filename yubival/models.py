@@ -37,6 +37,9 @@ class APIKey(models.Model):
         default=generate_api_key,
     )
 
+    def __str__(self):
+        return 'Key %d' % self.id
+
 
 class Device(models.Model):
     public_id = models.CharField(
@@ -62,3 +65,6 @@ class Device(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(255)],
         default=0,
     )
+
+    def __str__(self):
+        return 'Device %s' % self.public_id
