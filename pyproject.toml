@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "yubival"
+version = "0.1.0"
+description = "Django app that runs a standalone Yubikey validation server"
+authors = ["Nicolas Bruot <coremeltdown@bruot.org>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://github.com/bruot/yubival"
+repository = "https://github.com/bruot/yubival"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2.0"
+YubiOTP = "^1.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pytest-django = "^4.4.0"
+pytest-cov = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
