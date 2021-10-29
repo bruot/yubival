@@ -1,6 +1,7 @@
 __pycache__/
 /.coverage
 /coverage.xml
+/dist/
 /.idea/
 /poetry.lock
 /venv/
