@@ -19,7 +19,7 @@ def generate_api_key():
 
 
 def generate_otp_key():
-    return secrets.token_hex(32)
+    return secrets.token_hex(16)
 
 
 def generate_public_id():
