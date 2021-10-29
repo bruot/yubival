@@ -31,17 +31,28 @@ def generate_private_id():
 
 
 class APIKey(models.Model):
+    label = models.CharField(
+        max_length=64,
+        unique=True,
+    )
     key = models.CharField(
         max_length=4 * ((API_KEY_BYTE_LENGTH + 2) // 3),  # Max length after base64 conversion
         validators=[LengthValidator(4 * ((API_KEY_BYTE_LENGTH + 2) // 3))],
         default=generate_api_key,
     )
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+    )
 
     def __str__(self):
-        return 'Key %d' % self.id
+        return '%s (%d)' % (self.label, self.id)
 
 
 class Device(models.Model):
+    label = models.CharField(
+        max_length=64,
+        unique=True,
+    )
     public_id = models.CharField(
         unique=True, max_length=2 * DEVICE_PUBLIC_ID_BYTE_LENGTH,
         validators=[LengthValidator(2 * DEVICE_PUBLIC_ID_BYTE_LENGTH), validate_modhex],
@@ -65,6 +76,9 @@ class Device(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(255)],
         default=0,
     )
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+    )
 
     def __str__(self):
-        return 'Device %s' % self.public_id
+        return '%s (%d)' % (self.label, self.id)
