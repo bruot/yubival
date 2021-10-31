@@ -4,11 +4,17 @@ from yubival.models import Device, APIKey
 
 
 class APIKeyAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = (
+        'date_created',
+    )
 
 
 class DeviceAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = (
+        'session_counter',
+        'usage_counter',
+        'date_created',
+    )
 
 
 admin.site.register(APIKey, APIKeyAdmin)
