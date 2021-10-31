@@ -1,6 +1,8 @@
 from io import StringIO
+
 from django.core.management import call_command
 from django.test import TestCase
+from django.test.utils import captured_stderr
 
 from yubival.models import APIKey
 
@@ -17,6 +19,18 @@ class CommandTest(TestCase):
 
         # THEN
         self.assertIn('Created: id=1, key=', out.getvalue())
+
+    def test_missing_subcommand_parameter_raises_systemexit_and_shows_help(self):
+        # GIVEN
+        # `add` sub-argument is missing:
+        command = 'apikey'
+        args = ['add']
+        err = StringIO()
+
+        # THEN
+        with captured_stderr() as err, self.assertRaises(SystemExit):
+            call_command(command, args)
+        self.assertIn('apikey add: error: the following arguments are required: label', err.getvalue())
 
     def test_already_existing_label_shows_error(self):
         # GIVEN

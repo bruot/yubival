@@ -48,12 +48,24 @@ class Command(BaseCommand):
             required=True,
         )
 
-        parser_add = subparsers.add_parser('add', help='creates an API key')
+        parser_add = subparsers.add_parser(
+            'add',
+            called_from_command_line=True,
+            help='creates an API key',
+        )
         parser_add.add_argument('label', type=str, help='API key label')
 
-        subparsers.add_parser('list', help='lists API keys')
+        subparsers.add_parser(
+            'list',
+            called_from_command_line=True,
+            help='lists API keys',
+        )
 
-        parser_delete = subparsers.add_parser('delete', help='deletes an API key')
+        parser_delete = subparsers.add_parser(
+            'delete',
+            called_from_command_line=True,
+            help='deletes an API key',
+        )
         parser_delete.add_argument('id', type=int, help='deletes an API key')
 
     def handle(self, *args, **options):
