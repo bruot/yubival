@@ -158,7 +158,9 @@ Services that need to use the Yubival validation server require an API key which
 
 ```
 $ python manage.py apikey add service.example.com
-Created: id=1, key=1rVATMPbc8HZkKcNQTqJuQjC9Fo=
+Created: service.example.com (1):
+    id: 1
+    key: gnQ1sZWtRgCjm17waaiGHQptp8w=
 
 $ python manage.py apikey list
 1  service.example.com
@@ -174,7 +176,7 @@ YubiKeys can be added, listed and deleted using the commands below. To add a key
 
 ```
 $ python manage.py yubikey add James
-Created:
+Created: James (cnfbfdinbblh):
     Public ID: cnfbfdinbblh
     Private ID: 1b935e02e095
     AES key: fcea0ea12f97923ec4f952e0e170d419

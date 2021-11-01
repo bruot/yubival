@@ -83,4 +83,4 @@ class Device(models.Model):
     )
 
     def __str__(self):
-        return '%s' % self.label
+        return '%s (%s)' % (self.label, self.public_id)

@@ -18,7 +18,10 @@ class CommandTest(TestCase):
         call_command(command, args, stdout=out)
 
         # THEN
-        self.assertIn('Created: id=1, key=', out.getvalue())
+        self.assertIn('Created: John (1):', out.getvalue())
+        self.assertIn('\tid: 1', out.getvalue())
+        key = APIKey.objects.get(id=1)
+        self.assertIn('\tkey: %s' % key.key, out.getvalue())
 
     def test_missing_subcommand_parameter_raises_systemexit_and_shows_help(self):
         # GIVEN

@@ -26,7 +26,9 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Failed creating key: %s' % e.args[0]))
             return
 
-        self.stdout.write(self.style.SUCCESS('Created: id=%d, key=%s' % (key.id, key.key)))
+        self.stdout.write(self.style.SUCCESS('Created: %s:' % str(key)))
+        self.stdout.write('\tid: %s' % key.id)
+        self.stdout.write('\tkey: %s' % key.key)
 
     def _delete(self, key_id):
         """Deletes an API key"""

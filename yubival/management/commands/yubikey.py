@@ -28,7 +28,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Failed creating device: %s' % e.args[0]))
             return
 
-        self.stdout.write(self.style.SUCCESS('Created:'))
+        self.stdout.write(self.style.SUCCESS('Created: %s:' % str(device)))
         self.stdout.write('\tPublic ID: %s' % device.public_id)
         self.stdout.write('\tPrivate ID: %s' % device.private_id)
         self.stdout.write('\tAES key: %s' % device.key)
@@ -46,7 +46,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Failed creating device: %s' % e.args[0]))
             return
 
-        self.stdout.write(self.style.SUCCESS('Created: %s (%s)' % (device.label, device.public_id)))
+        self.stdout.write(self.style.SUCCESS('Created: %s' % str(device)))
 
     def _delete(self, public_id):
         """Deletes a YubiKey"""
@@ -56,9 +56,9 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Device public_id=%s does not exist.' % public_id))
             return
 
-        label = device.label
+        device_str = str(device)
         device.delete()
-        self.stdout.write(self.style.SUCCESS('Deleted: %s (%s)' % (label, public_id)))
+        self.stdout.write(self.style.SUCCESS('Deleted: %s' % device_str))
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(
