@@ -25,7 +25,6 @@ class CommandTest(TestCase):
         # `add` sub-argument is missing:
         command = 'apikey'
         args = ['add']
-        err = StringIO()
 
         # THEN
         with captured_stderr() as err, self.assertRaises(SystemExit):
