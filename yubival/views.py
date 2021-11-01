@@ -6,6 +6,7 @@ from binascii import hexlify
 from collections import OrderedDict
 from enum import Enum
 
+from django.db import transaction
 from django.http import HttpResponse
 from django.utils.http import urlencode
 from django.views import View
@@ -166,38 +167,40 @@ class VerifyView(View):
         response['otp'] = token
 
         public_id = token[:12]
-        try:
-            device = Device.objects.get(public_id=public_id)
-        except Device.DoesNotExist:
-            response['status'] = ValidationStatus.BAD_OTP.value
-            return signed_http_text_response(response, key)
+        devices = Device.objects.select_for_update().filter(public_id=public_id)
+        with transaction.atomic():
+            try:
+                device = devices.get()
+            except Device.DoesNotExist:
+                response['status'] = ValidationStatus.BAD_OTP.value
+                return signed_http_text_response(response, key)
 
-        try:
-            _, otp = decode_otp(token.encode('utf-8'), bytes.fromhex(device.key))
-        except Exception:
-            response['status'] = ValidationStatus.BAD_OTP.value
-            return signed_http_text_response(response, key)
+            try:
+                _, otp = decode_otp(token.encode('utf-8'), bytes.fromhex(device.key))
+            except Exception:
+                response['status'] = ValidationStatus.BAD_OTP.value
+                return signed_http_text_response(response, key)
 
-        response['sessionuse'] = otp.session
-        response['sessioncounter'] = otp.counter
-        response['timestamp'] = otp.timestamp
+            response['sessionuse'] = otp.session
+            response['sessioncounter'] = otp.counter
+            response['timestamp'] = otp.timestamp
 
-        if hexlify(otp.uid) != device.private_id.encode('utf-8'):
-            response['status'] = ValidationStatus.BAD_OTP.value
-            return signed_http_text_response(response, key)
+            if hexlify(otp.uid) != device.private_id.encode('utf-8'):
+                response['status'] = ValidationStatus.BAD_OTP.value
+                return signed_http_text_response(response, key)
 
-        if otp.session < device.session_counter:
-            response['status'] = ValidationStatus.REPLAYED_OTP.value
-            return signed_http_text_response(response, key)
+            if otp.session < device.session_counter:
+                response['status'] = ValidationStatus.REPLAYED_OTP.value
+                return signed_http_text_response(response, key)
 
-        if (otp.session == device.session_counter) and (otp.counter <= device.usage_counter):
-            response['status'] = ValidationStatus.REPLAYED_OTP.value
-            return signed_http_text_response(response, key)
+            if (otp.session == device.session_counter) and (otp.counter <= device.usage_counter):
+                response['status'] = ValidationStatus.REPLAYED_OTP.value
+                return signed_http_text_response(response, key)
 
-        # OTP is valid; we update the counters:
-        device.session_counter = otp.session
-        device.usage_counter = otp.counter
-        device.save()
+            # OTP is valid; we update the counters:
+            device.session_counter = otp.session
+            device.usage_counter = otp.counter
+            device.save()
 
         response['status'] = ValidationStatus.OK.value
         response['sl'] = 1
