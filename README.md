@@ -4,7 +4,7 @@
 
 # Yubival
 
-This Django app runs a standalone Yubikey OTP validation server. It implements [version 2.0 of the validation protocol](https://developers.yubico.com/yubikey-val/Validation_Protocol_V2.0.html). Yubikey devices and server API keys can easily be managed in the Django admin site.
+This Django app runs a standalone Yubikey OTP validation server. It implements [version 2.0 of the validation protocol](https://developers.yubico.com/yubikey-val/Validation_Protocol_V2.0.html). YubiKey devices and server API keys can easily be managed in the Django admin site or via command line.
 
 
 ## Installation
@@ -20,7 +20,7 @@ Install the package from PyPI:
 $ pip install yubival
 ```
 
-Add `'yubival'` to the `INSTALLED_APPS` setting in settings.py. Since it is recommended to also enable the admin site, `INSTALLED_APPS` may look like:
+Add `'yubival'` to the `INSTALLED_APPS` setting in settings.py. It is not required to enable the admin site. If you do, `INSTALLED_APPS` may look like:
 
 ```
 INSTALLED_APPS = [
@@ -42,7 +42,7 @@ from django.urls import path, include
 
 urlpatterns = [
     # ...
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # optional
     path('', include('yubival.urls')),
 ]
 ```
@@ -138,3 +138,54 @@ $ python manage.py runserver
 The website can now be accessed at http://127.0.0.1:8000/. It should show a "Page not found" error. The validation API is located at http://127.0.0.1:8000/wsapi/2.0/verify and the admin site interface at http://127.0.0.1:8000/admin/.
 
 While the `runserver` command above is an easy way to check your configuration and test Yubival, it should not be used to run the web server in production. Refer to the [deployment docs](https://docs.djangoproject.com/en/dev/howto/deployment/) to learn how to deploy your new myyubival site.
+
+
+## Commands usage
+
+### Getting help
+
+All subcommands can print a detailed help with `--help`. Example:
+
+```
+$ python manage.py yubikey --help
+$ python manage.py yubikey add-existing --help
+```
+
+
+### API keys management
+
+Services that need to use the Yubival validation server require an API key which is a shared secret between Yubival and the service. The key is used to sign requests and responses to and from the validation server. API keys can be managed using the `manage.py apikey` command:
+
+```
+$ python manage.py apikey add service.example.com
+Created: id=1, key=1rVATMPbc8HZkKcNQTqJuQjC9Fo=
+
+$ python manage.py apikey list
+1  service.example.com
+
+$ python manage.py apikey delete 1
+Deleted: service.example.com (1)
+```
+
+
+### Yubikey devices management
+
+YubiKeys can be added, listed and deleted using the commands below. To add a key, either use `manage.py yubikey add` that will automatically generate a public ID, a private ID and an AES key that you can use to configure a new Yubikey device, or use `manage.py yubikey add-existing` if you have a YubiKey for which you already know its parameters, including its secret key. In any case, make sure that the Yubival server will be the only validation server for the YubiKeys you register. If not, it would become possible to reuse OTP.
+
+```
+$ python manage.py yubikey add James
+Created:
+    Public ID: cnfbfdinbblh
+    Private ID: 1b935e02e095
+    AES key: fcea0ea12f97923ec4f952e0e170d419
+
+$ python manage.py yubikey add-existing Evelyn gkhcilelifuv 0123456789ab 00112233445566778899aabbccddeeff
+Created: Evelyn (gkhcilelifuv)
+
+$ python manage.py yubikey list
+cnfbfdinbblh James
+gkhcilelifuv Evelyn
+
+$ python manage.py yubikey delete cnfbfdinbblh
+Deleted: James (cnfbfdinbblh)
+```
