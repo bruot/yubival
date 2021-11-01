@@ -71,10 +71,12 @@ class Device(models.Model):
     session_counter = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(2**15 - 1)],
         default=0,
+        editable=False,
     )
     usage_counter = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(255)],
         default=0,
+        editable=False,
     )
     date_created = models.DateTimeField(
         auto_now_add=True,
