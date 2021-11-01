@@ -70,14 +70,14 @@ class Command(BaseCommand):
         parser_add = subparsers.add_parser(
             'add',
             called_from_command_line=True,
-            help='registers a YubiKey to be configured by generating random IDs and a secret key',
+            description='Registers a YubiKey with random IDs and secret key that can be uploaded to a YubiKey',
         )
-        parser_add.add_argument('label', type=str, help='Device label')
+        parser_add.add_argument('label', type=str, help='device label')
 
         parser_add_existing = subparsers.add_parser(
             'add-existing',
             called_from_command_line=True,
-            help='registers an already configured YubiKey',
+            description='Registers an already configured YubiKey',
         )
 
         random.seed(314159)
@@ -88,16 +88,16 @@ class Command(BaseCommand):
             random.getrandbits(8) for _ in range(DEVICE_PRIVATE_ID_BYTE_LENGTH)
         ]).hex()
 
-        parser_add_existing.add_argument('label', type=argparse_type(Device.label.field), help='Device label')
+        parser_add_existing.add_argument('label', type=argparse_type(Device.label.field), help='device label')
         parser_add_existing.add_argument(
             'public_id',
             type=argparse_type(Device.public_id.field, 'public_id_type'),
-            help='Public ID (%d-byte modhex such as "%s")' % (DEVICE_PUBLIC_ID_BYTE_LENGTH, example_public_id),
+            help='public ID (%d-byte modhex such as "%s")' % (DEVICE_PUBLIC_ID_BYTE_LENGTH, example_public_id),
         )
         parser_add_existing.add_argument(
             'private_id',
             type=argparse_type(Device.private_id.field, 'private_id_type'),
-            help='Private ID (%d-byte hexadecimal such as "%s")' % (DEVICE_PRIVATE_ID_BYTE_LENGTH, example_private_id),
+            help='private ID (%d-byte hexadecimal such as "%s")' % (DEVICE_PRIVATE_ID_BYTE_LENGTH, example_private_id),
         )
         parser_add_existing.add_argument(
             'key',
@@ -108,15 +108,19 @@ class Command(BaseCommand):
         subparsers.add_parser(
             'list',
             called_from_command_line=True,
-            help='lists YubiKeys',
+            description='Lists YubiKeys',
         )
 
         parser_delete = subparsers.add_parser(
             'delete',
             called_from_command_line=True,
-            help='deletes a YubiKey',
+            description='Deletes a YubiKey',
         )
-        parser_delete.add_argument('public_id', type=str, help='deletes a YubiKey')
+        parser_delete.add_argument(
+            'public_id',
+            type=str,
+            help='YubiKey public ID (%d-byte modhex such as "%s")' % (DEVICE_PUBLIC_ID_BYTE_LENGTH, example_public_id),
+        )
 
     def handle(self, *args, **options):
         subcommand = options['subcommand']
