@@ -167,6 +167,23 @@ class TestVerifyView(TestCase):
         # THEN
         self.assertEqual('OK', get_status_from_response(response))
 
+    def test_wrong_signature_gives_bad_signature_status(self):
+        # GIVEN
+        # Example OTP at https://developers.yubico.com/OTP/Specifications/Test_vectors.html
+        q = QueryDict('', mutable=True)
+        q.update({
+            'id': str(self.api_key.id),
+            'otp': 'cdcdcdcdcdcddvgtiblfkbgturecfllberrvkinnctnn',
+            'nonce': 'fHUKs9',
+        })
+        q['h'] = 'pOHpsdCn3f5pazYy4MK7P+Ol6zk='
+
+        # WHEN
+        response = self.client.get('/wsapi/2.0/verify?%s' % q.urlencode())
+
+        # THEN
+        self.assertEqual('BAD_SIGNATURE', get_status_from_response(response))
+
     def test_missing_nonce_gives_missing_parameter(self):
         # GIVEN
         q = QueryDict('', mutable=True)
@@ -198,6 +215,43 @@ class TestVerifyView(TestCase):
 
         # THEN
         self.assertEqual('NO_SUCH_CLIENT', get_status_from_response(response))
+
+    def test_wrong_length_token_gives_bad_otp(self):
+        # GIVEN
+        q = QueryDict('', mutable=True)
+        q.update({
+            'id': str(self.api_key.id),
+            'otp': 'cdcdcdcdcdcddvgtiblfkbgturec',
+            'nonce': 'fHUKs9',
+        })
+        q['h'] = hmac_sign_string(ordered_parameters_string(q, escape=True), base64.b64decode(self.api_key.key))
+
+        # WHEN
+        response = self.client.get('/wsapi/2.0/verify?%s' % q.urlencode())
+
+        # THEN
+        self.assertEqual('BAD_OTP', get_status_from_response(response))
+
+    def test_unknown_device_gives_bad_otp(self):
+        # GIVEN
+        device = Device.objects.get(public_id=self.public_id)
+        device.public_id = 'abcdcdcdcdcd'
+        device.save()
+
+        # Example OTP at https://developers.yubico.com/OTP/Specifications/Test_vectors.html
+        q = QueryDict('', mutable=True)
+        q.update({
+            'id': str(self.api_key.id),
+            'otp': 'cdcdcdcdcdcddvgtiblfkbgturecfllberrvkinnctnn',  # has session and usage counters set to 1
+            'nonce': 'fHUKs9',
+        })
+        q['h'] = hmac_sign_string(ordered_parameters_string(q, escape=True), base64.b64decode(self.api_key.key))
+
+        # WHEN
+        response = self.client.get('/wsapi/2.0/verify?%s' % q.urlencode())
+
+        # THEN
+        self.assertEqual('BAD_OTP', get_status_from_response(response))
 
     def test_ok_session_counter_bad_usage_counter_gives_replayed_otp_status(self):
         # GIVEN
@@ -242,6 +296,28 @@ class TestVerifyView(TestCase):
 
         # THEN
         self.assertEqual('OK', get_status_from_response(response))
+
+    def test_wrong_session_counter_gives_replayed_otp_status(self):
+        # GIVEN
+        device = Device.objects.get(public_id=self.public_id)
+        device.session_counter = 2
+        device.usage_counter = 0
+        device.save()
+
+        # Example OTP at https://developers.yubico.com/OTP/Specifications/Test_vectors.html
+        q = QueryDict('', mutable=True)
+        q.update({
+            'id': str(self.api_key.id),
+            'otp': 'cdcdcdcdcdcddvgtiblfkbgturecfllberrvkinnctnn',  # has session and usage counters set to 1
+            'nonce': 'fHUKs9',
+        })
+        q['h'] = hmac_sign_string(ordered_parameters_string(q, escape=True), base64.b64decode(self.api_key.key))
+
+        # WHEN
+        response = self.client.get('/wsapi/2.0/verify?%s' % q.urlencode())
+
+        # THEN
+        self.assertEqual('REPLAYED_OTP', get_status_from_response(response))
 
     def test_ok_usage_counter_same_session_counter_gives_ok_status(self):
         # GIVEN
