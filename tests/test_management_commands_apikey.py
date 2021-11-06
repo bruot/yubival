@@ -52,7 +52,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, *args)
+        call_command(command, *args, stdout=StringIO())
         call_command(command, *args, stdout=out)
 
         # THEN
