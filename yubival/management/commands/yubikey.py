@@ -88,20 +88,24 @@ class Command(BaseCommand):
             random.getrandbits(8) for _ in range(DEVICE_PRIVATE_ID_BYTE_LENGTH)
         ]).hex()
 
-        parser_add_existing.add_argument('label', type=argparse_type(Device.label.field), help='device label')
+        parser_add_existing.add_argument(
+            'label',
+            type=argparse_type(Device._meta.get_field('label')),
+            help='device label',
+        )
         parser_add_existing.add_argument(
             'public_id',
-            type=argparse_type(Device.public_id.field, 'public_id_type'),
+            type=argparse_type(Device._meta.get_field('public_id'), 'public_id_type'),
             help='public ID (%d-byte modhex such as "%s")' % (DEVICE_PUBLIC_ID_BYTE_LENGTH, example_public_id),
         )
         parser_add_existing.add_argument(
             'private_id',
-            type=argparse_type(Device.private_id.field, 'private_id_type'),
+            type=argparse_type(Device._meta.get_field('private_id'), 'private_id_type'),
             help='private ID (%d-byte hexadecimal such as "%s")' % (DEVICE_PRIVATE_ID_BYTE_LENGTH, example_private_id),
         )
         parser_add_existing.add_argument(
             'key',
-            type=argparse_type(Device.key.field, 'key_type'),
+            type=argparse_type(Device._meta.get_field('key'), 'key_type'),
             help='AES key (16-byte hexadecimal such as "00112233445566778899aabbccddeeff")',
         )
 
