@@ -4,7 +4,7 @@
 
 # Yubival
 
-This Django app runs a standalone Yubikey OTP validation server. It implements [version 2.0 of the validation protocol](https://developers.yubico.com/yubikey-val/Validation_Protocol_V2.0.html). YubiKey devices and server API keys can easily be managed in the Django admin site or via command line.
+This Django app runs a standalone Yubikey OTP validation server. It implements [version 2.0 of the validation protocol](https://developers.yubico.com/yubikey-val/Validation_Protocol_V2.0.html) limited to the case of a single validation server. YubiKey devices and server API keys can easily be managed in the Django admin site or via command line.
 
 
 ## Installation
