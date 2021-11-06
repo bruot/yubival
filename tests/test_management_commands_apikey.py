@@ -8,6 +8,17 @@ from yubival.models import APIKey
 
 
 class CommandTest(TestCase):
+    def test_list_keys_without_keys(self):
+        # GIVEN
+        command = 'apikey'
+        args = ['list']
+
+        # THEN
+        try:
+            call_command(command, args)
+        except:
+            self.fail('Command raised an exception.')
+
     def test_successful_key_addition(self):
         # GIVEN
         command = 'apikey'

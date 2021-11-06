@@ -11,6 +11,9 @@ class Command(BaseCommand):
     def _list(self):
         """Lists all API keys"""
 
+        if APIKey.objects.count() == 0:
+            return
+
         id_column_size = len(str(APIKey.objects.latest('id').id))
         row_format = '{:<%d} {:<}' % id_column_size
 
