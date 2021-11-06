@@ -15,7 +15,7 @@ class CommandTest(TestCase):
 
         # THEN
         try:
-            call_command(command, args)
+            call_command(command, *args)
         except:
             self.fail('Command raised an exception.')
 
@@ -26,7 +26,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Created: John (1):', out.getvalue())
@@ -42,7 +42,7 @@ class CommandTest(TestCase):
 
         # THEN
         with captured_stderr() as err, self.assertRaises(SystemExit):
-            call_command(command, args)
+            call_command(command, *args)
         self.assertIn('apikey add: error: the following arguments are required: label', err.getvalue())
 
     def test_already_existing_label_shows_error(self):
@@ -52,8 +52,8 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args)
-        call_command(command, args, stdout=out)
+        call_command(command, *args)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Failed creating key: UNIQUE constraint failed: yubival_apikey.label', out.getvalue())
@@ -67,7 +67,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
         output = out.getvalue()
 
         # THEN
@@ -82,7 +82,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Deleted: John (1)', out.getvalue())
@@ -94,7 +94,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('API key id=1 does not exist.', out.getvalue())

@@ -15,7 +15,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Created: John (kkkkkkkkkkkk)', out.getvalue())
@@ -30,7 +30,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Created:', out.getvalue())
@@ -44,7 +44,7 @@ class CommandTest(TestCase):
 
         # THEN
         with captured_stderr() as err, self.assertRaises(SystemExit):
-            call_command(command, args)
+            call_command(command, *args)
         self.assertIn('yubikey add-existing: error: the following arguments are required: key', err.getvalue())
 
     def test_already_existing_label_shows_error(self):
@@ -54,8 +54,8 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args)
-        call_command(command, args, stdout=out)
+        call_command(command, *args)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Failed creating device: UNIQUE constraint failed: yubival_device.label', out.getvalue())
@@ -69,7 +69,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
         output = out.getvalue()
 
         # THEN
@@ -84,7 +84,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Deleted: John (%s)' % public_id, out.getvalue())
@@ -96,7 +96,7 @@ class CommandTest(TestCase):
         out = StringIO()
 
         # WHEN
-        call_command(command, args, stdout=out)
+        call_command(command, *args, stdout=out)
 
         # THEN
         self.assertIn('Device public_id=cccccccccccc does not exist.', out.getvalue())
